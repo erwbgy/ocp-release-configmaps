@@ -1,10 +1,16 @@
 #!/bin/bash
 TARGET_VERSION=$1
 IMAGE_URL=$2
+ARCH=$3
 if test -z "$TARGET_VERSION" -o -z "$IMAGE_URL"
 then
-  echo "Usage: $0 <ocp version> <image url>" >&2
+  echo "Usage: $0 <ocp version> <image url> [<architecture>]" >&2
   exit 1
+fi
+if test -z "$ARCH"
+then
+  ARCH=x86_64
+  echo "using $ARCH for architecture"
 fi
 # Based on: https://dev.to/baptistemm/openshift-z-patch-upgrade-in-restricted-environment-without-mirroring-quay-io-5em3
 export OCP_RELEASE_NUMBER=${TARGET_VERSION}
@@ -13,7 +19,7 @@ export SIGNATURE_BASE64=$(curl -s "https://mirror.openshift.com/pub/openshift-v4
 export DIGEST_ALGO=$(echo $DIGEST | cut -d: -f1)
 export DIGEST_SIGNATURE=$(echo $DIGEST | cut -d: -f2)
 
-OUTPUT_FILE=release-image-${OCP_RELEASE_NUMBER}-configmap.yaml
+OUTPUT_FILE=release-image-${OCP_RELEASE_NUMBER}-${ARCH}-configmap.yaml
 cat <<EOF > $OUTPUT_FILE
 apiVersion: v1
 kind: ConfigMap

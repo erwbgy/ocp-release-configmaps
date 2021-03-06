@@ -1,7 +1,7 @@
 apiVersion: v1
 kind: ConfigMap
 metadata:
-  name: release-image-4.6.19-x86_64
+  name: release-image-4.6.19
   namespace: openshift-config-managed
   annotations:
     image.url: https://quay.io/repository/openshift-release-dev/ocp-release/manifest/sha256:47df4bfe1cfd6d63dd2e880f00075ed1d37f997fd54884ed823ded9f5d96abfc
