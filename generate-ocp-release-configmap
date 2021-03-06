@@ -1,0 +1,28 @@
+#!/bin/bash
+TARGET_VERSION=$1
+IMAGE_URL=$2
+if test -z "$TARGET_VERSION" -o -z "$IMAGE_URL"
+then
+  echo "Usage: $0 <ocp version> <image url>" >&2
+  exit 1
+fi
+# Based on: https://dev.to/baptistemm/openshift-z-patch-upgrade-in-restricted-environment-without-mirroring-quay-io-5em3
+# TARGET_VERSION should be in format x.y.z, for example 4.3.28
+export OCP_RELEASE_NUMBER=${TARGET_VERSION}
+#export DIGEST="$(oc adm release info quay.io/openshift-release-dev/ocp-release:${OCP_RELEASE_NUMBER}-x86_64 | sed -n 's/Pull From: .*@//p')"
+export DIGEST=${IMAGE_URL##*/}
+export SIGNATURE_BASE64=$(curl -s "https://mirror.openshift.com/pub/openshift-v4/signatures/openshift/release/$(echo $DIGEST | cut -d: -f1)=$(echo $DIGEST | cut -d: -f2)/signature-1" | base64 -w0 && echo)
+export DIGEST_ALGO=$(echo $DIGEST | cut -d: -f1)
+export DIGEST_SIGNATURE=$(echo $DIGEST | cut -d: -f2)
+
+cat <<EOF
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: release-image-${OCP_RELEASE_NUMBER}
+  namespace: openshift-config-managed
+  labels:
+     release.openshift.io/verification-signatures: ""
+binaryData:
+  ${DIGEST_ALGO}-${DIGEST_SIGNATURE}: ${SIGNATURE_BASE64}
+EOF
