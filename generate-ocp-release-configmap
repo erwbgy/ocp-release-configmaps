@@ -20,8 +20,10 @@ kind: ConfigMap
 metadata:
   name: release-image-${OCP_RELEASE_NUMBER}
   namespace: openshift-config-managed
+  annotations:
+    image.url: $IMAGE_URL
   labels:
-     release.openshift.io/verification-signatures: ""
+    release.openshift.io/verification-signatures: ""
 binaryData:
   ${DIGEST_ALGO}-${DIGEST_SIGNATURE}: ${SIGNATURE_BASE64}
 EOF
