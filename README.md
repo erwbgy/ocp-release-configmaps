@@ -1,4 +1,4 @@
-Go to https://quay.io/repository/openshift-release-dev/ocp-release?tag=latest&tab=tags to find out the digest URL for the OCP version.
+Go to https://quay.io/repository/openshift-release-dev/ocp-release?tab=tags to find out the digest URL for the OCP version.
 
 Then run `generate-ocp-release-configmap <ocp version> <digest url> <arch>`.
 
